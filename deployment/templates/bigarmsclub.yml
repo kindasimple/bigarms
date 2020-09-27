@@ -1,0 +1,39 @@
+---
+
+Description:
+    Deploy a dynamodb table for storing bigarms messages
+
+Resources:
+    DDBTableMessage:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: !Sub ${AWS::StackName}-pushups-table
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          -
+            AttributeName: "member_id"
+            AttributeType: "S"
+          -
+            AttributeName: "club_id"
+            AttributeType: "S"
+          -
+            AttributeName: "time_created"
+            AttributeType: "N"
+        KeySchema:
+          -
+            AttributeName: "member_id"
+            KeyType: "HASH"
+          -
+            AttributeName: "time_created"
+            KeyType: "RANGE"
+
+        GlobalSecondaryIndexes:
+          -
+            IndexName: "club-index"
+            KeySchema:
+              -
+                AttributeName: "club_id"
+                KeyType: "HASH"
+            Projection:
+                NonKeyAttributes: []
+                ProjectionType: "ALL"

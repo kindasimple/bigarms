@@ -1,0 +1,2 @@
+ACTIVATE = . venv/bin/activate
+PIP_INSTALL = $(ACTIVATE) pip install

@@ -1,0 +1,7 @@
+include Make.defs
+
+ACTIVATE = source venv/bin/activate &&
+
+venv:
+	python -m venv venv
+	$(PIP_INSTALL) -r requirements/local.txt

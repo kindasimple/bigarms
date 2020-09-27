@@ -1,0 +1,11 @@
+[tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = [
+    "actionlog"
+]
+norecursedirs = [
+    ".pytest_cache",
+    ".vscode",
+    "venv",
+    "deployment"
+]

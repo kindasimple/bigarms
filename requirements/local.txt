@@ -1,0 +1,3 @@
+emoji
+pytest
+boto3
