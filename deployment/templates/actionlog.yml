@@ -34,6 +34,9 @@ Resources:
             AttributeName: "member_id"
             AttributeType: "S"
           -
+            AttributeName: "action"
+            AttributeType: "S"
+          -
             AttributeName: "entry_count"
             AttributeType: "N"
           -
@@ -44,17 +47,29 @@ Resources:
             AttributeName: "member_id"
             KeyType: "HASH"
           -
-            AttributeName: "entry_count"
+            AttributeName: "action"
             KeyType: "RANGE"
         GlobalSecondaryIndexes:
           -
-            IndexName: "activity-index"
+            IndexName: "member-updated-index"
             KeySchema:
               -
                 AttributeName: "member_id"
                 KeyType: "HASH"
               -
                 AttributeName: "time_updated"
+                KeyType: "RANGE"
+            Projection:
+                NonKeyAttributes: []
+                ProjectionType: "ALL"
+          -
+            IndexName: "action-updated-index"
+            KeySchema:
+              -
+                AttributeName: "member_id"
+                KeyType: "HASH"
+              -
+                AttributeName: "entry_count"
                 KeyType: "RANGE"
             Projection:
                 NonKeyAttributes: []

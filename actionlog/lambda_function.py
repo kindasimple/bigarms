@@ -20,8 +20,8 @@ import time
 import time
 import urllib.parse
 
+
 print('Loading function')
-dynamo = boto3.resource('dynamodb')
 ACTION_RE = re.compile('^:(?P<emoji_code>[a-zA-Z_]+):(?P<value>\d+)$')
 
 ACTION_NUMBERS = {'pushups'}
@@ -60,10 +60,28 @@ def record_entry(member_id, input_data):
         'value': input_data['value'],
     }
     print('saving item %s' % json.dumps(item_dict))
+    dynamo = boto3.resource('dynamodb')
     table = dynamo.Table('actionlog-tables-entry')
-    return table.put_item(
+    table.put_item(
         Item=item_dict
     )
+    return update_summary(member_id, input_data['action'], input_data['value'], timestamp)
+
+
+def update_summary(member_id, action, value, timestamp):
+    dynamo = boto3.resource('dynamodb')
+    table = dynamo.Table('actionlog-tables-statistics')
+    result = table.update_item(
+        Key={'member_id': member_id, 'action': action},
+        UpdateExpression="ADD entries :one, sum_total :value SET time_updated = :tu",
+        ExpressionAttributeValues={
+            ':one': 1,
+            ':value': value,
+            ':tu': timestamp,
+        },
+        ReturnValues='ALL_NEW',
+    )
+    return result['Attributes'], result['ResponseMetadata']['HTTPStatusCode'] == 200
 
 def lambda_handler(event, context):
     """
@@ -71,18 +89,17 @@ def lambda_handler(event, context):
     """
     print("Received event: " + json.dumps(event, indent=2))
 
-    result = None
+    status = None
     try:
         member_id, message = parse_event(event)
         input_dict = process_payload(message)
-        result = record_entry(member_id, input_dict)
+        summary, status = record_entry(member_id, input_dict)
     except Exception as e:
         print("Exception: " + repr(e))
 
-    if result:
-        # TODO: Give some about the aggregated statistics
+    if status:
         return '<?xml version=\"1.0\" encoding=\"UTF-8\"?>'\
-           '<Response><Message><Body>Entry recorded!</Body></Message></Response>'
+           '<Response><Message><Body>{sum_total} {action} recorded over {entries} entries</Body></Message></Response>'.format(**summary)
     else:
        # TODO: Give some feedback
         return '<?xml version=\"1.0\" encoding=\"UTF-8\"?>'\

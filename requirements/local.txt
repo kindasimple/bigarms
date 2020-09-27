@@ -1,3 +1,4 @@
 emoji
 pytest
 boto3
+moto[DynamoDB2]
