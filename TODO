@@ -1,0 +1,9 @@
+☐ Use environment variables
+    ```python
+    TWILIO_ACCOUNT_SID = os.environ['TWILIO_ACCOUNT_SID']
+    ```
+    update variables
+    ```bash
+    aws lambda update-function-configuration --function-name my-function \
+    --environment "Variables={TWILIO_ACCOUNT_SID=aaabbbccc==}"
+    ```

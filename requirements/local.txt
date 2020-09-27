@@ -1,4 +1,4 @@
-emoji
-pytest
 boto3
+emoji
 moto[DynamoDB2]
+pytest
