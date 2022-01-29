@@ -1,0 +1,16 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.8
+  build:
+    commands:
+      - make test
+
+reports:
+  pytest_reports:
+    files:
+      - report.xml
+    base-directory: output
+    file-format: JUNITXML

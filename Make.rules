@@ -1,7 +1,5 @@
-ACTIVATE = . venv/bin/activate
-PIP_INSTALL = $(ACTIVATE) pip install
-ACTIVATE = source venv/bin/activate &&
+include Make.defs
 
 venv:
 	python -m venv venv
-	$(PIP_INSTALL) -r requirements/local.txt
+	$(PIP_INSTALL) -r $(BASE_DIR)/requirements/local.txt

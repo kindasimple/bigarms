@@ -1,0 +1,32 @@
+version: "3.9"
+services:
+  web:
+    build: .
+    image: bigarmsclub:latest
+    ports:
+      - 8000:8000
+    environment:
+      - ENDPOINT_URL=http://dynamo:8888
+    volumes:
+      - ./bigarmsclub:/app/bigarmsclub
+      - ./src:/app/src
+      - ./static:/app/static
+      - ./templates:/app/templates
+      - ./tests:/app/tests
+    working_dir: /app
+    command: ["uvicorn", "src.dashboard.main:app", "--host", "0.0.0.0", "--reload", "--reload-dir", "./src"]
+
+  dynamo:
+    image: amazon/dynamodb-local
+    volumes:
+      - ./data/:/home/dynamodblocal/data
+    ports:
+      - 8888:8888
+    command: ["-jar", "DynamoDBLocal.jar", "-sharedDb", "-dbPath", "/home/dynamodblocal/data", "-port", "8888"]
+
+  migrations:
+    image: python:3.8.9-buster
+    volumes:
+     - ./:/app
+    working_dir: /app
+    command: ["/app/scripts/wait-for-it.sh", "dynamo:8888", "--", "make fixtures"]

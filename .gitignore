@@ -1,5 +1,8 @@
-venv
-output
 .pytest_cache
+.tox
 __pycache__
+data
 function.zip
+output
+output
+venv
