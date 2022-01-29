@@ -1,5 +1,13 @@
-include Make.defs
+BASE_DIR = $(shell git rev-parse --show-toplevel)
+include $(BASE_DIR)/Make.defs
 
 venv:
 	python -m venv venv
 	$(PIP_INSTALL) -r $(BASE_DIR)/requirements/local.txt
+
+clean:
+	cd $(BASEDIR) && \
+		rm -rf venv && \
+		rm -rf output && \
+		rm -rf .tox  && \
+		rm -rf __pycache__

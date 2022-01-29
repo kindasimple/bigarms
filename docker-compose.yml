@@ -2,6 +2,7 @@ version: "3.9"
 services:
   web:
     build: .
+    init: true
     image: bigarmsclub:latest
     ports:
       - 8000:8000
@@ -26,7 +27,22 @@ services:
 
   migrations:
     image: python:3.8.9-buster
+    init: true
     volumes:
      - ./:/app
     working_dir: /app
     command: ["/app/scripts/wait-for-it.sh", "dynamo:8888", "--", "make fixtures"]
+
+  lambda:
+    image: lambci/lambda:python3.8
+    volumes:
+     - ./src:/var/task:ro,delegated
+     - ./deployment/venv/lib/python3.8/site-packages:/opt/python:ro,delegated
+    environment:
+      - DOCKER_LAMBDA_STAY_OPEN=1
+      - ENDPOINT_URL=http://dynamo:8888
+    env_file:
+      - twilio.test.env
+    ports:
+      - 9001:9001
+    command: ["actionlog.lambda_function.lambda_handler"]

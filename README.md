@@ -16,6 +16,9 @@ This silly little service recieves messages forwarded from twillio and processes
 ```
  # run unit tests with tox
  make test
+
+ # Update requirements
+ make -C requirements/
 ```
 
 ## Deployment
@@ -41,3 +44,7 @@ The lambda is already deployed with a Twilio configuration as lambda variables, 
 `make open`: Open the homepage
 
 `make fixtures` (run on host): load dynamo db data and fixtures into local mock
+
+`make -b deployment/ package`: create zip files
+
+`make -b deployment/ publish`: publish lambda zipfile
