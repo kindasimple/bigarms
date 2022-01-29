@@ -83,13 +83,13 @@ MOCK_ENTRIES = {
 @pytest.fixture
 def DDBT():
     with moto.mock_dynamodb2():
-        client = boto3.client("dynamodb")
+        client = boto3.client("dynamodb", region_name="us-west-2")
         for table_name, table_config in MOCK_TABLES.items():
             client.create_table(
                 TableName=table_name,
                 **table_config
             )
-        db = boto3.resource("dynamodb")
+        db = boto3.resource("dynamodb", region_name="us-west-2")
         for table_name, table_items in MOCK_ENTRIES.items():
             tbl = db.Table(table_name)
             for item in table_items:

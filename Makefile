@@ -6,7 +6,7 @@ test: venv
 	$(ACTIVATE) tox
 
 shell:
-	docker-compose run --rm web bash
+	docker-compose run --init --rm web bash
 
 build: clean test
 	python3 -m venv venv
