@@ -1,0 +1,8 @@
+-r production.in
+
+awscli
+emoji
+moto[DynamoDB2]
+mypy
+pytest
+tox

@@ -1,35 +1,43 @@
 include Make.rules
 
-AWS_REGION ?= us-west-2
+export AWS_DEFAULT_REGION ?= us-west-2
 
 test: venv
-	$(ACTIVATE) pytest -vv
+	$(ACTIVATE) tox
 
 shell:
-	$(ACTIVATE) python
+	docker-compose run --rm web bash
 
-build: clean test
-	python -m venv venv
-	$(ACTIVATE) pip install -r requirements/production.txt
-	mkdir -p output && \
-		cd venv/lib/python3.7/site-packages \
-		&& zip -r9 ../../../../output/function.zip .
-	zip -gj output/function.zip actionlog/lambda_function.py
-	$(ACTIVATE) aws lambda update-function-code \
-		--function-name replyMessages \
-		--zip-file fileb://output/function.zip
+run: venv
+	$(ACTIVATE) uvicorn dashboard.main:app --reload
 
-config:
-ifeq ($(TWILIO_ACCOUNT_SID),)
-	$(error TWILIO_ACCOUNT_SID must have a value)
-endif
-ifeq ($(TWILIO_AUTH_TOKEN),)
-	$(error TWILIO_AUTH_TOKEN must have a value)
-endif
-	$(ACTIVATE) aws lambda update-function-configuration \
-		--function-name replyMessages \
-		--timeout 30 \
-    	--environment "Variables={TWILIO_ACCOUNT_SID=$(TWILIO_ACCOUNT_SID),TWILIO_AUTH_TOKEN=$(TWILIO_AUTH_TOKEN)}"
-clean:
-	rm -rf venv
-	rm -rf output
+start:
+	docker-compose up -d
+
+stop:
+	docker-compose down
+
+fixtures: venv
+	$(ACTIVATE) pip install awscli
+	$(ACTIVATE) ./scripts/dynamo_setup.sh
+
+lint: venv
+	$(ACTIVATE) flake8
+	$(ACTIVATE) mypy
+
+open:
+	open http://localhost:8000
+
+lambda-reply: venv
+	$(ACTIVATE) aws lambda invoke --endpoint http://localhost:9001 --no-sign-request \
+  		--function-name replyMessages --payload '{"Body": "💪🏻10", "From": "%2B16072152471"}' output/task_output.json
+
+lambda-api:
+	$(ACTIVATE) aws lambda invoke --endpoint http://localhost:9002 --no-sign-request \
+  		--function-name bigarms_api --payload '{ "resource": "/{proxy+}", "path": "/", "httpMethod": "GET", "pathParameters": { "proxy": "/" }, "requestContext": { "path": "/", "resourcePath": "/{proxy+}", "protocol": "HTTP/1.1" } }' output/task_output.json
+
+lambda-shell:
+	docker-compose run --rm --entrypoint= lambda-api bash
+
+package-shell:
+	docker-compose run --rm package bash
