@@ -34,6 +34,8 @@ jmespath==0.10.0
     # via
     #   boto3
     #   botocore
+mangum==0.12.3
+    # via -r production.in
 markupsafe==2.0.1
     # via jinja2
 pydantic==1.9.0
@@ -53,7 +55,9 @@ sniffio==1.2.0
 starlette==0.17.1
     # via fastapi
 typing-extensions==4.0.1
-    # via pydantic
+    # via
+    #   mangum
+    #   pydantic
 urllib3==1.26.8
     # via botocore
 uvicorn[standard]==0.17.0.post1

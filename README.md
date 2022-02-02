@@ -1,6 +1,8 @@
 bigarms
 =======
 
+![Unit Tests](https://github.com/kindasimple/bigarms/actions/workflows/unit_test.yml/badge.svg)
+
 This silly little service recieves messages forwarded from twillio and processes the payload. The message is an emoji and a value. The results are stored in dynamo db. It has a front-end that retrieves dynamodb results as a dashboard.
 
 *Technologies:*
@@ -16,21 +18,25 @@ This silly little service recieves messages forwarded from twillio and processes
 ```
  # run unit tests with tox
  make test
-
- # Update requirements
- make -C requirements/
 ```
 
 ## Deployment
 
-Deploy dynamodb tables
-
 ```
+# Update requirements
+make -C requirements/
+# dynamodb tables
 
 # To deploy action log
-make -C deployment deploy-actionlog
+make -C deployment/ deploy-db-actionlog
 # deploy bigarms club
-make -C deployment deploy-bigarmsclub
+make -C deployment/ deploy-db-bigarmsclub
+
+# build function.zip
+make -C deployment/ package
+
+# deploy lambda to AWS
+make -C deployment/ publish
 ```
 
 ## Make Targets
@@ -45,6 +51,6 @@ The lambda is already deployed with a Twilio configuration as lambda variables, 
 
 `make fixtures` (run on host): load dynamo db data and fixtures into local mock
 
-`make -b deployment/ package`: create zip files
+## Build requirements
+docker-compose run
 
-`make -b deployment/ publish`: publish lambda zipfile

@@ -1,10 +1,10 @@
 FROM python:3.8.9-buster
 
 COPY ./requirements /tmp/requirements
-RUN pip install -r /tmp/requirements/local.txt
+RUN pip install -r /tmp/requirements/production.txt
 
-COPY ./src /src
-COPY ./templates /templates
-COPY ./static /static
+COPY ./bigarms /app
 
-CMD uvicorn src.dashboard.main:app
+WORKDIR /app
+
+CMD uvicorn bigarms.dashboard.main:app

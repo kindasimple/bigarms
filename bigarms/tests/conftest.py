@@ -97,5 +97,5 @@ def DDBT():
 
         # boto3.resource("dynamodb").get_available_subresources()
         # boto3.client('dynamodb').list_tables()
-        with patch('src.actionlog.actionlog.db_resource', return_value=db):
+        with patch('bigarms.actionlog.actionlog.db_resource', return_value=db):
             yield db

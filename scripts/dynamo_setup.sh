@@ -49,7 +49,13 @@ aws dynamodb put-item \
     --endpoint-url $ENDPOINT_URL \
     --table-name actionlog-tables-statistics \
     --item \
-        '{"member_id": {"S": "+16072152471"}, "action": {"S": "pushups"}, "entry_count": {"N": "10"}, "time_updated": {"N": "1619829907"}}'
+        '{"member_id": {"S": "+16072152471"}, "action": {"S": "pushups"}, "entries": {"N": "10"}, "sum_total": {"N": "100"}, "time_updated": {"N": "1619829907"}}'
+
+aws dynamodb put-item \
+    --endpoint-url $ENDPOINT_URL \
+    --table-name actionlog-tables-statistics \
+    --item \
+        '{"member_id": {"S": "+16077675433"}, "action": {"S": "pushups"}, "entries": {"N": "1"}, "sum_total": {"N": "100"}, "time_updated": {"N": "1619829917"}}'
 
 aws dynamodb get-item \
     --endpoint-url $ENDPOINT_URL \
@@ -62,7 +68,7 @@ aws dynamodb put-item \
     --endpoint-url $ENDPOINT_URL \
     --table-name actionlog-tables-entry \
     --item \
-            '{"member_id": {"S": "+16072152471"}, "time_created": {"N": "1619829907"}}'
+            '{"member_id": {"S": "+16072152471"}, "time_created": {"N": "1619829907"}, "action": {"S": "pushups"}, "value": {"N": "10"}}'
 
 aws dynamodb get-item \
     --endpoint-url $ENDPOINT_URL \
@@ -99,9 +105,7 @@ aws dynamodb query \
 aws dynamodb query \
     --endpoint-url $ENDPOINT_URL \
     --table-name actionlog-tables-statistics \
-    --key-condition-expression 'member_id = :a AND time_updated BETWEEN :t1 AND :t2' \
+    --key-condition-expression 'member_id = :a' \
     --expression-attribute-values '{
-        ":a": {"S": "+16072152471"},
-        ":t1": {"N": "1619829900"},
-        ":t2": {"N": "1619829908"}
+        ":a": {"S": "+16072152471"}
     }'
