@@ -3,4 +3,5 @@ boto3
 emoji
 fastapi
 jinja2
+mangum
 uvicorn[standard]

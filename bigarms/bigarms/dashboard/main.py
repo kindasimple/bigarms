@@ -7,8 +7,8 @@ from fastapi.templating import Jinja2Templates
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 
-
-from src.actionlog import actionlog
+from mangum import Mangum
+from bigarms.actionlog import actionlog
 
 app = FastAPI()
 
@@ -42,3 +42,5 @@ async def read_root(request: Request, action='pushups'):
 # @app.get("/summary/{action}")
 # async def read_item(action: str):
 #     return actionlog.get_summary(action)
+
+handler = Mangum(app)

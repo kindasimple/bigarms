@@ -13,15 +13,15 @@ from .constants import ACTION_PUSHUP_ID_NAME
 
 TABLE_STATISTICS = "actionlog-tables-statistics"
 REGION = 'us-west-2'
-REGION = 'local'
+# REGION = 'local'
 
 
 class LeaderboardEntry(BaseModel):
     member_id: str
     member_name: str
     action: str
-    entries: int
-    sum_total: int
+    entries: int = 0
+    sum_total: int = 0
     time_updated: int
 
 
@@ -94,19 +94,12 @@ def get_summary(action: str) -> List[LeaderboardEntry]:
     for item in items:
         if item['action'] != action:
             continue
-        entry = leaderboard[item['member_id']]
-        entry['entries'] = entry.get('entry_count', 0) + 1
-        if entry.get('time_updated', 0) < item['time_updated']:
-            entry['time_updated'] = item['time_updated']
-        entry['action'] = item['action']
-
-        entry['sum_total'] = entry.get('sum_total', 0) + item['entry_count']
+        member_id = item['member_id']
+        leaderboard[member_id] = item
+        leaderboard[member_id]['member_name'] = ACTION_PUSHUP_ID_NAME.get(member_id, member_id)
 
     return [
-        LeaderboardEntry(
-            member_id=member_id,
-            member_name=ACTION_PUSHUP_ID_NAME.get(member_id, member_id),
-            **item)
+        LeaderboardEntry(**item)
         for member_id, item in leaderboard.items()]
 
 

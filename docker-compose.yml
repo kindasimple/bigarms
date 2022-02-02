@@ -9,13 +9,8 @@ services:
     environment:
       - ENDPOINT_URL=http://dynamo:8888
     volumes:
-      - ./bigarmsclub:/app/bigarmsclub
-      - ./src:/app/src
-      - ./static:/app/static
-      - ./templates:/app/templates
-      - ./tests:/app/tests
-    working_dir: /app
-    command: ["uvicorn", "src.dashboard.main:app", "--host", "0.0.0.0", "--reload", "--reload-dir", "./src"]
+      - ./bigarms:/app
+    command: ["uvicorn", "bigarms.dashboard.main:app", "--host", "0.0.0.0", "--reload", "--reload-dir", "./bigarms"]
 
   dynamo:
     image: amazon/dynamodb-local
@@ -27,16 +22,24 @@ services:
 
   migrations:
     image: python:3.8.9-buster
-    init: true
-    volumes:
-     - ./:/app
+    environment:
+      - BASE_DIR=.
+      - AWS_ACCESS_KEY_ID=test-key
+      - AWS_SECRET_ACCESS_KEY=test-access-key
+      - ENDPOINT_URL=http://dynamo:8888
     working_dir: /app
-    command: ["/app/scripts/wait-for-it.sh", "dynamo:8888", "--", "make fixtures"]
+    volumes:
+     - ./Makefile:/app/Makefile
+     - ./Make.defs:/app/Make.defs
+     - ./Make.rules:/app/Make.rules
+     - ./scripts:/app/scripts
+     - ./requirements:/app/requirements
+    command: ["/app/scripts/wait-for-it.sh", "dynamo:8888", "-t", "20", "--", "make", "fixtures"]
 
-  lambda:
+  lambda-reply:
     image: lambci/lambda:python3.8
     volumes:
-     - ./src:/var/task:ro,delegated
+     - ./bigarms:/var/task:ro,delegated
      - ./deployment/venv/lib/python3.8/site-packages:/opt/python:ro,delegated
     environment:
       - DOCKER_LAMBDA_STAY_OPEN=1
@@ -45,4 +48,25 @@ services:
       - twilio.test.env
     ports:
       - 9001:9001
-    command: ["actionlog.lambda_function.lambda_handler"]
+    command: ["bigarms.actionlog.lambda_function.lambda_handler"]
+
+  lambda-api:
+    image: lambci/lambda:python3.8
+    volumes:
+     - ./bigarms:/var/task:ro,delegated
+     - ./deployment/venv/lib/python3.8/site-packages:/opt/python:ro,delegated
+    environment:
+      - DOCKER_LAMBDA_STAY_OPEN=1
+      - ENDPOINT_URL=http://dynamo:8888
+    env_file:
+      - twilio.test.env
+    ports:
+      - 9002:9001
+    command: ["bigarms.dashboard.main.handler"]
+  package:
+    image: lambci/lambda:build-python3.8
+    volumes:
+     - ./:/var/task
+     - ./requirements:/requirements:ro,delegated
+    entrypoint: ""
+    command: ["make", "-C", "package"]
