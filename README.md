@@ -3,9 +3,15 @@ bigarms
 
 ![Unit Tests](https://github.com/kindasimple/bigarms/actions/workflows/unit_test.yml/badge.svg)
 
-This silly little API service that forwards SMS messages to a "Big Arms Club" group. SMS messages that are received at a registered Twilio number are recorded and forwarded to a group. An AWS lambda service processes the payload. The message is an emoji and a value, e.g. "💪10". The processed results are sent to stored in dynamo db, and the message is forwarded to the group.
+This silly little API service that forwards SMS messages to a "Big Arms Club" group.
+
+![Big Arms Club Group Text](./docs/big_arms_group_text.png)
+
+SMS messages that are received at a registered Twilio number are recorded and forwarded to a group. An AWS lambda service processes the payload. The message is an emoji and a value, e.g. "💪10". The processed results are sent to stored in dynamo db, and the message is forwarded to the group.
 
 There is also a lambda that retrieves dynamodb results as a leaderboard.
+
+![Big Arms Club Leaderboard](./docs/leaderboard.png)
 
 *Technologies:*
 
