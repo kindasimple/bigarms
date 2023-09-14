@@ -1,0 +1,14 @@
+FROM lambci/lambda:build-python3.8
+
+ENV AWS_DEFAULT_REGION us-east-1
+
+COPY ./requirements/production.txt requirements.txt
+COPY ./bigarms /bigarms
+
+RUN python -m venv venv && \
+    source venv/bin/activate && \
+    pip install -r requirements.txt && \
+    cd venv/lib/python3.8/site-packages && \
+    zip -9yr lambda.zip .
+
+CMD aws s3 cp lambda.zip  s3://bigarms-lambda/lambda.zip && aws lambda update-function-code --function-name mylambda --zip-file fileb://lambda.zip

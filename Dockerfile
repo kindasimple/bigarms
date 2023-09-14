@@ -7,4 +7,4 @@ COPY ./bigarms /app
 
 WORKDIR /app
 
-CMD uvicorn bigarms.dashboard.main:app
+CMD uvicorn bigarms.leaderboard:app

@@ -1,7 +1,8 @@
-import pytest
-import moto
-import boto3
 from unittest.mock import patch
+
+import boto3
+import moto
+import pytest
 
 
 @pytest.fixture(autouse=True)
@@ -12,18 +13,18 @@ def env_setup(monkeypatch):
 
 MOCK_TABLES = {
     "actionlog-tables-statistics": {
-        'KeySchema': [
+        "KeySchema": [
             {"AttributeName": "member_id", "KeyType": "HASH"},
             {"AttributeName": "action", "KeyType": "RANGE"},
         ],
-        'AttributeDefinitions': [
+        "AttributeDefinitions": [
             {"AttributeName": "member_id", "AttributeType": "S"},
             {"AttributeName": "action", "AttributeType": "S"},
             {"AttributeName": "entry_count", "AttributeType": "N"},
             {"AttributeName": "time_updated", "AttributeType": "N"},
         ],
-        'ProvisionedThroughput': {"ReadCapacityUnits": 5, "WriteCapacityUnits": 5},
-        'GlobalSecondaryIndexes': [
+        "ProvisionedThroughput": {"ReadCapacityUnits": 5, "WriteCapacityUnits": 5},
+        "GlobalSecondaryIndexes": [
             {
                 "IndexName": "member-updated-index",
                 "KeySchema": [
@@ -47,8 +48,8 @@ MOCK_TABLES = {
                     "ReadCapacityUnits": 1,
                     "WriteCapacityUnits": 1,
                 },
-            }
-        ]
+            },
+        ],
     },
     "actionlog-tables-entry": {
         "KeySchema": [
@@ -60,7 +61,7 @@ MOCK_TABLES = {
             {"AttributeName": "time_created", "AttributeType": "N"},
         ],
         "ProvisionedThroughput": {"ReadCapacityUnits": 5, "WriteCapacityUnits": 5},
-    }
+    },
 }
 
 MOCK_ENTRIES = {
@@ -71,12 +72,14 @@ MOCK_ENTRIES = {
             "time_updated": 0,
         },
     ],
-    "actionlog-tables-entry": [{
-        "member_id": "+16072152471",
-        "action": "pushups",
-        "time_created": 0,
-        "value": 0,
-    }]
+    "actionlog-tables-entry": [
+        {
+            "member_id": "+16072152471",
+            "action": "pushups",
+            "time_created": 0,
+            "value": 0,
+        }
+    ],
 }
 
 
@@ -85,10 +88,7 @@ def DDBT():
     with moto.mock_dynamodb2():
         client = boto3.client("dynamodb", region_name="us-west-2")
         for table_name, table_config in MOCK_TABLES.items():
-            client.create_table(
-                TableName=table_name,
-                **table_config
-            )
+            client.create_table(TableName=table_name, **table_config)
         db = boto3.resource("dynamodb", region_name="us-west-2")
         for table_name, table_items in MOCK_ENTRIES.items():
             tbl = db.Table(table_name)
@@ -97,5 +97,5 @@ def DDBT():
 
         # boto3.resource("dynamodb").get_available_subresources()
         # boto3.client('dynamodb').list_tables()
-        with patch('bigarms.actionlog.actionlog.db_resource', return_value=db):
+        with patch("actionlog.actionlog.db_resource", return_value=db):
             yield db

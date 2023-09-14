@@ -1,5 +1,5 @@
 """
-Recieve messages sent via text to twilio and store them in dynamodb
+Receive messages sent via text to twilio and store them in dynamodb
 with a schema format
     -
     AttributeName: "member_id"
@@ -16,8 +16,9 @@ import inspect
 import json
 import os
 import re
+from typing import Any, Dict, Tuple
 from urllib import parse, request
-from typing import Dict, Any
+
 import emoji
 
 from .actionlog import record_entry
@@ -36,7 +37,6 @@ EMOJI_ACTION_MAP = {
     ":hot_beverage:": "caffeine",
 }
 ACTION_SET = {action for code, action in EMOJI_ACTION_MAP.items()}
-
 ACTION_CLUB_MAP = {"pushups": ACTION_PUSHUP_ID_NAME}
 OWNED_NUMBER = "+12526295051"
 CLUB_MANAGER = "+16072152471"
@@ -69,7 +69,7 @@ def message_members(to_number, body):
     # message = client.messages.create(
     #     to=num,
     #     from_=from_number,
-    #     body='💪{}'.format(value)
+    #     body=f'💪{value}',
     # )
     # print(message.sid)
     post_params = {
@@ -88,13 +88,13 @@ def message_members(to_number, body):
         raise e
 
 
-def parse_event(event):
+def parse_event(event: Dict[str, str]) -> Tuple[str, str]:
     message = parse.unquote_plus(event["Body"]).strip()
     member_id = parse.unquote(event["From"])
     return member_id, message
 
 
-def emoji_action(emoji_code):
+def emoji_action(emoji_code: str) -> str:
     if not emoji_code:
         return
     if emoji_code in EMOJI_ACTION_MAP:
@@ -104,7 +104,7 @@ def emoji_action(emoji_code):
             return action
 
 
-def process_payload(message):
+def process_payload(message) -> Dict[str, Any]:
     """
     Process a text message body and return a dictionary with
     the action and the result value
@@ -148,7 +148,7 @@ def process_payload(message):
     return {"record": False, "message": message_text}
 
 
-def lambda_handler(event: Dict, context: Any):
+def lambda_handler(event: Dict, context: Any) -> str:
     """
     parse a message of the format <emoji><value> and store it in
     a dynamodb table
@@ -174,7 +174,7 @@ def lambda_handler(event: Dict, context: Any):
         if action == "pushups":
             if member_id == CLUB_MANAGER:
                 for to_number in ACTION_CLUB_MAP["pushups"]:
-                    message_members(to_number, "💪{}".format(input_dict["value"]))
+                    message_members(to_number, f'💪{input_dict["value"]}')
                 return _xml(
                     "{sum_total} {action} recorded over {entries} meetings".format(
                         **summary
@@ -182,7 +182,7 @@ def lambda_handler(event: Dict, context: Any):
                 )
             else:
                 name = ACTION_CLUB_MAP["pushups"][member_id]
-                message_members(CLUB_MANAGER, "{}: {}".format(name, message))
+                message_members(CLUB_MANAGER, f"{name}: {message}")
                 return _xml(
                     "{sum_total} {action} recorded over {entries} meetings".format(
                         **summary
@@ -198,7 +198,7 @@ def lambda_handler(event: Dict, context: Any):
                 if person in name_member_id_map:
                     # Send a labeled confirmation to the target member
                     to_number = name_member_id_map[person]
-                    message_members(to_number, "{}👍".format(input_dict["value"]))
+                    message_members(to_number, f"{input_dict['value']}👍")
                     return _xml(
                         "Notified {person}. {sum_total} {action} recorded over {entries} meetings".format(
                             person=person, **summary
@@ -207,15 +207,15 @@ def lambda_handler(event: Dict, context: Any):
             else:
                 # Send a member's reply to the manager
                 person = ACTION_PUSHUP_ID_NAME[member_id]
-                message_members(CLUB_MANAGER, "{}: {}".format(person, message))
+                message_members(CLUB_MANAGER, f"{person}: {message}")
             return _xml(
                 "{sum_total} {action} recorded over {entries} entries".format(**summary)
             )
         else:
             # someone is trying to chat or like
             person = ACTION_PUSHUP_ID_NAME[member_id]
-            message_members(CLUB_MANAGER, "{}: {}".format(person, message))
+            message_members(CLUB_MANAGER, f"{person}: {message}")
             return None
     else:
         # TODO: Give some feedback
-        return _xml("What you talkin 'bout willis?")
+        return _xml("oh dear!")

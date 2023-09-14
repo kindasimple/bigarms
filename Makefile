@@ -9,7 +9,7 @@ shell:
 	docker-compose run --rm web bash
 
 run: venv
-	$(ACTIVATE) uvicorn dashboard.main:app --reload
+	$(ACTIVATE) uvicorn bigarms.leaderboard:app --reload
 
 start:
 	docker-compose up -d
