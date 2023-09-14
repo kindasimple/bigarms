@@ -23,13 +23,13 @@ config:
 	$(ACTIVATE) source $(BASE_DIR)/twilio.test.env && \
 		aws lambda update-function-configuration \
 			--function-name replyMessages \
-			--handler bigarms.actionlog.lambda_function.lambda_handler \
+			--handler actionlog.lambda_function.lambda_handler \
 			--timeout 30 \
 			--environment "Variables={TWILIO_ACCOUNT_SID=$${TWILIO_ACCOUNT_SID},TWILIO_AUTH_TOKEN=$${TWILIO_AUTH_TOKEN}}"
 	# $(ACTIVATE) source $(BASE_DIR)/twilio.test.env && \
 	# 	aws lambda update-function-configuration \
 	# 		--function-name bigarms_api \
-	# 		--handler bigarms.dashboard.main.handler \
+	# 		--handler bigarms.leaderboard.handler \
 	# 		--timeout 30
 
 package: clean
@@ -52,7 +52,7 @@ deploy-api: venv
 	--zip-file fileb://$(BASE_DIR)/output/function.zip
 	# $(ACTIVATE) aws lambda create-function \
 	# 	--function-name bigarms_api \
-	# 	--handler dashboard.main.handler \
+	# 	--handler bigarms.leaderboard.handler \
 	# 	--timeout 30 \
 	# 	--runtime python3.8 \
 	# 	--publish \

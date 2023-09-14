@@ -1,6 +1,7 @@
 import calendar
 import time
-from bigarms.actionlog.actionlog import update_summary
+
+from actionlog.actionlog import update_summary
 
 
 def test_update_summary(DDBT):

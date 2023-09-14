@@ -1,7 +1,7 @@
 ---
 
 Description:
-    Deploy a dynamodb table for storing bigarms messages
+    Deploy a dynamodb table for storing log messages & statistics
 
 Resources:
     DDBTableLogEntry:

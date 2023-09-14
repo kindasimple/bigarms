@@ -10,7 +10,7 @@ services:
       - ENDPOINT_URL=http://dynamo:8888
     volumes:
       - ./bigarms:/app
-    command: ["uvicorn", "bigarms.dashboard.main:app", "--host", "0.0.0.0", "--reload", "--reload-dir", "./bigarms"]
+    command: ["uvicorn", "bigarms.leaderboard:app", "--host", "0.0.0.0", "--reload", "--reload-dir", "./bigarms"]
     depends_on:
       - dynamo
       - migrations
@@ -51,7 +51,7 @@ services:
       - twilio.test.env
     ports:
       - 9001:9001
-    command: ["bigarms.actionlog.lambda_function.lambda_handler"]
+    command: ["actionlog.lambda_function.lambda_handler"]
 
   lambda-api:
     image: lambci/lambda:python3.8
@@ -65,7 +65,7 @@ services:
       - twilio.test.env
     ports:
       - 9002:9001
-    command: ["bigarms.dashboard.main.handler"]
+    command: ["bigarms.leaderboard.handler"]
 
   package:
     image: lambci/lambda:build-python3.8

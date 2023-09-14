@@ -1,10 +1,13 @@
 from unittest import mock
 
 import emoji
-
-from bigarms.actionlog.lambda_function import (emoji_action, lambda_handler,
-                                           parse_event, process_payload,
-                                           record_entry)
+from actionlog.lambda_function import (
+    emoji_action,
+    lambda_handler,
+    parse_event,
+    process_payload,
+    record_entry,
+)
 
 MSG_EVENT_BODY = "%F0%9F%92%AA10"
 MSG_FROM = "%2B16072152471"
@@ -88,7 +91,7 @@ def test_record_entry(mock_time, DDBT):
     # get value updated
 
 
-@mock.patch("bigarms.actionlog.lambda_function.message_members")
+@mock.patch("actionlog.lambda_function.message_members")
 def test_lambda_handler(mock_message, DDBT):
     message = lambda_handler(
         {

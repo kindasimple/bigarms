@@ -1,7 +1,10 @@
 *.env
 .pytest_cache
 .tox
+.vscode
 __pycache__
+.DS_Store
+
 data
 function.zip
 output
