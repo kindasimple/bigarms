@@ -28,8 +28,8 @@ class LeaderboardEntry(BaseModel):
 def db_kwargs():
     return {
         'endpoint_url': os.getenv('ENDPOINT_URL'),
-        'aws_access_key_id': '',
-        'aws_secret_access_key': '',
+        'aws_access_key_id': 'DUMMYIDEXAMPLE',
+        'aws_secret_access_key': 'DUMMYEXAMPLEKEY',
     } if os.getenv('ENDPOINT_URL') else {}
 
 

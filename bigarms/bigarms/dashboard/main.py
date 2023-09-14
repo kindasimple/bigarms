@@ -21,6 +21,8 @@ templates = Jinja2Templates(directory="templates")
 
 def timectime(s):
     return time.ctime(s) # datetime.datetime.fromtimestamp(s)
+
+
 templates.env.filters['ctime'] = timectime
 
 
@@ -32,11 +34,11 @@ async def statistics(request: Request):
     return templates.TemplateResponse("leaderboard.html", context)
 
 
-@app.get("/api", response_class=HTMLResponse)
-@app.get("/api/{action}", response_class=HTMLResponse)
-async def read_root(request: Request, action='pushups'):
-    summaries = actionlog.get_summary(action)
-    return JSONResponse(content=jsonable_encoder(summaries))
+# @app.get("/api", response_class=HTMLResponse)
+# @app.get("/api/{action}", response_class=HTMLResponse)
+# async def read_root(request: Request, action='pushups'):
+#     summaries = actionlog.get_summary(action)
+#     return JSONResponse(content=jsonable_encoder(summaries))
 
 
 # @app.get("/summary/{action}")
